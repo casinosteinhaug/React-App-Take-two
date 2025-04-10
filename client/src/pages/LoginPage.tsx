@@ -21,7 +21,7 @@ import {
   TabPanels,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaGoogle, FaFacebook, FaGithub } from "react-icons/fa";
 import { useAuth } from "@/hooks/use-auth";
 import ResetPasswordModal from "@/components/ResetPasswordModal";
 
@@ -106,13 +106,13 @@ const LoginPage: React.FC = () => {
                   <form onSubmit={handleLoginSubmit}>
                     <Stack spacing={4}>
                       <FormControl id="login-username" isRequired>
-                        <FormLabel>Username</FormLabel>
+                        <FormLabel>Username or Email</FormLabel>
                         <Input 
                           type="text" 
                           name="username"
                           value={loginForm.username}
                           onChange={handleLoginChange}
-                          placeholder="Your username"
+                          placeholder="Your username or email"
                         />
                       </FormControl>
                       
@@ -157,9 +157,48 @@ const LoginPage: React.FC = () => {
                         type="submit"
                         isLoading={loginMutation.isPending}
                         mt={4}
+                        mb={4}
+                        w="100%"
                       >
                         Log In
                       </Button>
+                      
+                      <Text textAlign="center" fontSize="sm" color={useColorModeValue("gray.600", "gray.400")} mb={4}>
+                        or continue with
+                      </Text>
+                      
+                      <Flex justify="center" gap={4}>
+                        <Button 
+                          leftIcon={<FaGoogle />} 
+                          colorScheme="red" 
+                          variant="outline"
+                          flex="1"
+                          isDisabled
+                          title="Coming soon"
+                        >
+                          Google
+                        </Button>
+                        <Button 
+                          leftIcon={<FaFacebook />} 
+                          colorScheme="facebook" 
+                          variant="outline"
+                          flex="1"
+                          isDisabled
+                          title="Coming soon"
+                        >
+                          Facebook
+                        </Button>
+                        <Button 
+                          leftIcon={<FaGithub />} 
+                          colorScheme="gray" 
+                          variant="outline"
+                          flex="1"
+                          isDisabled
+                          title="Coming soon"
+                        >
+                          GitHub
+                        </Button>
+                      </Flex>
                     </Stack>
                   </form>
                 </TabPanel>

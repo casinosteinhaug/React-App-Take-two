@@ -25,6 +25,33 @@ export class MemStorage implements IStorage {
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000, // prune expired entries every 24h
     });
+    
+    // Create default admin user
+    this.createDefaultAdminUser();
+  }
+  
+  private async createDefaultAdminUser() {
+    // Sjekk om admin-brukeren allerede finnes
+    const existingAdmin = await this.getUserByUsername('admin');
+    if (!existingAdmin) {
+      // Hash of 'admin' password
+      const hashedPassword = "9de7de29ea0c680a43d4e9915b4bf18b5c9d319de13e0829fb15a8c786b1b8ce1e96d3fc49397a499491c0a238994d499cf8fffebf8dcc1d25faefb79a4b5d48.07329fa5c90df385e79ea20f8ee9c6a3";
+      
+      const adminUser: User = {
+        id: this.currentId++,
+        username: 'admin',
+        password: hashedPassword,
+        email: 'admin@admin.com',
+        name: 'Admin Testuser',
+        phone: null,
+        avatar: null,
+        bio: null,
+        socialLinks: [],
+        theme: 'system'
+      };
+      
+      this.users.set(adminUser.id, adminUser);
+    }
   }
 
   async getUser(id: number): Promise<User | undefined> {

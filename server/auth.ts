@@ -50,7 +50,17 @@ export function setupAuth(app: Express) {
   passport.use(
     new LocalStrategy(async (username, password, done) => {
       try {
-        const user = await storage.getUserByUsername(username);
+        // Sjekk om brukernavnet er en e-postadresse
+        const isEmail = username.includes('@');
+        
+        // Hent brukeren basert på brukernavn eller e-post
+        let user;
+        if (isEmail) {
+          user = await storage.getUserByEmail(username);
+        } else {
+          user = await storage.getUserByUsername(username);
+        }
+        
         if (!user || !(await comparePasswords(password, user.password))) {
           return done(null, false);
         } else {

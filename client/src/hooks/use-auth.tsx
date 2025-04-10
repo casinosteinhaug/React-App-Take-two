@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-query";
 import { InsertUser, User, LoginData, resetPasswordSchema } from "@shared/schema";
 import { getQueryFn, apiRequest, queryClient } from "@/lib/queryClient";
-import { useToast } from "@chakra-ui/react";
+import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 
 type AuthContextType = {

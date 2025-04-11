@@ -50,6 +50,13 @@ export function formatTestResult(driverName: string, response: any): void {
 async function runTests() {
   console.log('\n🔄 Starting LLM Driver Tests...\n');
   
+  // Verify API keys
+  console.log('API Keys verification:');
+  console.log('OpenAI API Key starts with:', process.env.OPENAI_API_KEY?.slice(0, 5) || 'NOT SET');
+  console.log('Anthropic API Key starts with:', process.env.ANTHROPIC_API_KEY?.slice(0, 5) || 'NOT SET');
+  console.log('Google API Key starts with:', process.env.GOOGLE_API_KEY?.slice(0, 5) || 'NOT SET');
+  console.log('\n');
+
   const factory = LLMDriverFactory.getInstance();
   factory.initializeDrivers();
   const drivers = factory.getAvailableDrivers();

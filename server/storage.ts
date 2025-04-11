@@ -1,8 +1,10 @@
 import { users, type User, type InsertUser, type UpdateUser } from "@shared/schema";
 import session from "express-session";
-import createMemoryStore from "memorystore";
+import connectPg from "connect-pg-simple";
+import { db, pool } from "./db";
+import { eq } from "drizzle-orm";
 
-const MemoryStore = createMemoryStore(session);
+const PostgresSessionStore = connectPg(session);
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -14,16 +16,13 @@ export interface IStorage {
   sessionStore: session.Store;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  currentId: number;
+export class DatabaseStorage implements IStorage {
   sessionStore: session.Store;
 
   constructor() {
-    this.users = new Map();
-    this.currentId = 1;
-    this.sessionStore = new MemoryStore({
-      checkPeriod: 86400000, // prune expired entries every 24h
+    this.sessionStore = new PostgresSessionStore({
+      pool,
+      createTableIfMissing: true
     });
     
     // Create default admin user
@@ -37,8 +36,7 @@ export class MemStorage implements IStorage {
       // Hash of 'admin' password
       const hashedPassword = "9de7de29ea0c680a43d4e9915b4bf18b5c9d319de13e0829fb15a8c786b1b8ce1e96d3fc49397a499491c0a238994d499cf8fffebf8dcc1d25faefb79a4b5d48.07329fa5c90df385e79ea20f8ee9c6a3";
       
-      const adminUser: User = {
-        id: this.currentId++,
+      const adminUser = {
         username: 'admin',
         password: hashedPassword,
         email: 'admin@admin.com',
@@ -50,73 +48,54 @@ export class MemStorage implements IStorage {
         theme: 'system'
       };
       
-      this.users.set(adminUser.id, adminUser);
+      await this.createUser(adminUser);
     }
   }
 
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const result = await db.select().from(users).where(eq(users.id, id));
+    return result[0];
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const result = await db.select().from(users).where(eq(users.username, username));
+    return result[0];
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.email === email,
-    );
+    const result = await db.select().from(users).where(eq(users.email, email));
+    return result[0];
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentId++;
-    // Make sure name is properly handled
-    const name = insertUser.name || null;
-    
-    const user: User = { 
-      ...insertUser, 
-      id,
-      name,
+    const result = await db.insert(users).values({
+      ...insertUser,
       phone: null,
       avatar: null,
       bio: null,
-      socialLinks: [] as { platform: string, url: string }[],
+      socialLinks: [],
       theme: "system",
-    };
-    this.users.set(id, user);
-    return user;
+    }).returning();
+    
+    return result[0];
   }
 
-  async updateUser(id: number, updates: Partial<UpdateUser>): Promise<void> {
-    const user = this.users.get(id);
+  async updateUser(id: number, updates: Partial<UpdateUser> | any): Promise<void> {
+    // Hent brukeren først for å få tilgang til gjeldende data
+    const user = await this.getUser(id);
     if (!user) {
       throw new Error(`User with id ${id} not found`);
     }
     
-    // Håndtere socialLinks spesielt for å unngå typefeil
-    let socialLinks = user.socialLinks;
-    if (updates.socialLinks) {
-      socialLinks = updates.socialLinks as { platform: string, url: string }[];
-      delete updates.socialLinks;
-    }
-    
-    const updatedUser = { 
-      ...user, 
-      ...updates,
-      socialLinks
-    };
-    
-    this.users.set(id, updatedUser);
+    // Oppdater brukeren i databasen
+    await db.update(users)
+      .set(updates)
+      .where(eq(users.id, id));
   }
 
   async deleteUser(id: number): Promise<void> {
-    if (!this.users.has(id)) {
-      throw new Error(`User with id ${id} not found`);
-    }
-    this.users.delete(id);
+    await db.delete(users).where(eq(users.id, id));
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

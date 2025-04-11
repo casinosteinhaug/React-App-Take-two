@@ -66,20 +66,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.setQueryData(["/api/user"], user);
       toast({
         title: "Registration successful",
-        status: "success",
+        variant: "default",
         duration: 2000,
-        isClosable: true,
-        position: "bottom",
       });
     },
     onError: (error: Error) => {
       toast({
         title: "Registration failed",
         description: error.message,
-        status: "error",
+        variant: "destructive",
         duration: 3000,
-        isClosable: true,
-        position: "bottom",
       });
     },
   });
@@ -92,20 +88,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.setQueryData(["/api/user"], null);
       toast({
         title: "Logged out successfully",
-        status: "success",
+        variant: "default",
         duration: 2000,
-        isClosable: true,
-        position: "bottom",
       });
     },
     onError: (error: Error) => {
       toast({
         title: "Logout failed",
         description: error.message,
-        status: "error",
+        variant: "destructive",
         duration: 3000,
-        isClosable: true,
-        position: "bottom",
       });
     },
   });
@@ -119,20 +111,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       toast({
         title: "Password reset email sent",
         description: message,
-        status: "success",
+        variant: "default",
         duration: 5000,
-        isClosable: true,
-        position: "bottom",
       });
     },
     onError: (error: Error) => {
       toast({
         title: "Failed to reset password",
         description: error.message,
-        status: "error",
+        variant: "destructive",
         duration: 3000,
-        isClosable: true,
-        position: "bottom",
       });
     },
   });

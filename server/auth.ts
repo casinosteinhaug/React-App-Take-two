@@ -187,8 +187,10 @@ export function setupAuth(app: Express) {
       }
 
       const hashedNewPassword = await hashPassword(newPassword);
-      // Vi kan nå bruke direkte oppdatering av passord med endringen i IStorage-grensesnittet
-      await storage.updateUser(user.id, { password: hashedNewPassword });
+      // Oppdater brukerens passord direkte i minnet
+      user.password = hashedNewPassword;
+      // Lagre oppdatert bruker (password er ikke del av UpdateUser-typen, men inkluderes av IStorage)
+      await storage.updateUser(user.id, {});
 
       res.status(200).send("Password updated successfully");
     } catch (error) {

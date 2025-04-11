@@ -83,7 +83,8 @@ async function runTests() {
   }
 }
 
-if (require.main === module) {
+// Check if file is being run directly
+if (import.meta.url === `file://${process.argv[1]}`) {
   runTests().catch(console.error);
 }
 

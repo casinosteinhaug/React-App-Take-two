@@ -30,25 +30,18 @@ export class DatabaseStorage implements IStorage {
   }
   
   private async createDefaultAdminUser() {
-    // Sjekk om admin-brukeren allerede finnes
-    const existingAdmin = await this.getUserByUsername('admin');
-    if (!existingAdmin) {
-      try {
-        // Reset admin bruker
-        await db.delete(users).where(eq(users.username, 'admin'));
-        
-        // Opprett ny admin-bruker med et enkelt passord
-        await this.createUser({
-          username: 'admin',
-          password: 'admin', // Dette vil bli hashet i createUser
-          email: 'admin@admin.com',
-          name: 'Admin Testuser'
-        });
-        
-        console.log("Admin user created successfully");
-      } catch (error) {
-        console.error("Error creating admin user:", error);
+    try {
+      // Sjekk om admin-brukeren allerede finnes
+      const existingAdmin = await this.getUserByUsername('admin');
+      if (!existingAdmin) {
+        // Vi lager ikke admin-brukeren automatisk her
+        // Dette vil bli gjort via registrering eller API
+        console.log("Admin user does not exist yet");
+      } else {
+        console.log("Admin user already exists");
       }
+    } catch (error) {
+      console.error("Error checking admin user:", error);
     }
   }
 

@@ -38,8 +38,10 @@ export const updateUserSchema = createInsertSchema(users).omit({
 }).partial();
 
 export const loginSchema = z.object({
-  username: z.string(),
-  password: z.string(),
+  username: z.string().min(1, "Username is required"),
+  password: z.string().min(1, "Password is required"),
+  email: z.string().email("Invalid email format").optional(),
+  name: z.string().optional(),
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

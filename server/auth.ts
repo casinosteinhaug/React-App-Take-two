@@ -84,51 +84,91 @@ export function setupAuth(app: Express) {
 
   app.post("/api/register", async (req, res, next) => {
     try {
+      console.log("Registration request:", req.body);
       const result = loginSchema.safeParse(req.body);
       if (!result.success) {
-        return res.status(400).send(fromZodError(result.error).message);
+        const errorMessage = fromZodError(result.error).message;
+        console.log("Validation error:", errorMessage);
+        return res.status(400).send(errorMessage);
       }
 
-      const existingUser = await storage.getUserByUsername(req.body.username);
-      if (existingUser) {
+      // Sjekk om brukernavn allerede finnes
+      const existingUsername = await storage.getUserByUsername(req.body.username);
+      if (existingUsername) {
+        console.log("Username already exists:", req.body.username);
         return res.status(400).send("Username already exists");
       }
 
+      // Sjekk om e-post allerede finnes
+      const existingEmail = await storage.getUserByEmail(req.body.email);
+      if (existingEmail) {
+        console.log("Email already exists:", req.body.email);
+        return res.status(400).send("Email already exists");
+      }
+
+      // Hash passordet
+      const hashedPassword = await hashPassword(req.body.password);
+      console.log("Password hashed successfully");
+
+      // Lagre brukeren i databasen
       const user = await storage.createUser({
         ...req.body,
-        password: await hashPassword(req.body.password),
+        password: hashedPassword,
       });
+      console.log("User created successfully:", user.id);
 
+      // Logge inn brukeren automatisk
       req.login(user, (err) => {
-        if (err) return next(err);
-        // Lag en ny bruker uten passord for å sende til klienten
+        if (err) {
+          console.error("Login error after registration:", err);
+          return next(err);
+        }
+        // Fjern passord før sending av respons
         const { password, ...userWithoutPassword } = user;
+        console.log("User logged in after registration");
         res.status(201).json(userWithoutPassword);
       });
     } catch (error) {
+      console.error("Registration error:", error);
       next(error);
     }
   });
 
   app.post("/api/login", (req, res, next) => {
     try {
+      console.log("Login request:", req.body);
       const result = loginSchema.safeParse(req.body);
       if (!result.success) {
-        return res.status(400).send(fromZodError(result.error).message);
+        const errorMessage = fromZodError(result.error).message;
+        console.log("Validation error:", errorMessage);
+        return res.status(400).send(errorMessage);
       }
 
       passport.authenticate("local", (err: Error, user: SelectUser) => {
-        if (err) return next(err);
-        if (!user) return res.status(400).send("Invalid username or password");
+        if (err) {
+          console.error("Authentication error:", err);
+          return next(err);
+        }
+        
+        if (!user) {
+          console.log("Invalid login attempt for:", req.body.username);
+          return res.status(400).send("Invalid username or password");
+        }
 
         req.login(user, (err) => {
-          if (err) return next(err);
+          if (err) {
+            console.error("Session error:", err);
+            return next(err);
+          }
+          
+          console.log("User logged in successfully:", user.id);
           // Bruk destrukturering i stedet for delete
           const { password, ...userWithoutPassword } = user;
           res.status(200).json(userWithoutPassword);
         });
       })(req, res, next);
     } catch (error) {
+      console.error("Login error:", error);
       next(error);
     }
   });
@@ -171,29 +211,34 @@ export function setupAuth(app: Express) {
     try {
       if (!req.isAuthenticated()) return res.sendStatus(401);
 
+      console.log("Update password request for user:", req.user.id);
       const result = updatePasswordSchema.safeParse(req.body);
       if (!result.success) {
-        return res.status(400).send(fromZodError(result.error).message);
+        const errorMessage = fromZodError(result.error).message;
+        console.log("Validation error:", errorMessage);
+        return res.status(400).send(errorMessage);
       }
 
       const user = await storage.getUser(req.user.id);
       if (!user) {
+        console.log("User not found:", req.user.id);
         return res.status(404).send("User not found");
       }
 
       const { currentPassword, newPassword } = req.body;
       if (!(await comparePasswords(currentPassword, user.password))) {
+        console.log("Current password is incorrect for user:", req.user.id);
         return res.status(400).send("Current password is incorrect");
       }
 
       const hashedNewPassword = await hashPassword(newPassword);
-      // Oppdater brukerens passord direkte i minnet
-      user.password = hashedNewPassword;
-      // Lagre oppdatert bruker (password er ikke del av UpdateUser-typen, men inkluderes av IStorage)
-      await storage.updateUser(user.id, {});
+      // Oppdater brukerens passord i databasen
+      await storage.updateUser(req.user.id, { password: hashedNewPassword });
+      console.log("Password updated successfully for user:", req.user.id);
 
       res.status(200).send("Password updated successfully");
     } catch (error) {
+      console.error("Update password error:", error);
       next(error);
     }
   });
@@ -202,17 +247,24 @@ export function setupAuth(app: Express) {
     try {
       if (!req.isAuthenticated()) return res.sendStatus(401);
 
+      console.log("Update user request for user:", req.user.id, "data:", req.body);
+      
       await storage.updateUser(req.user.id, req.body);
+      console.log("User updated in database");
+      
       const updatedUser = await storage.getUser(req.user.id);
       
       if (!updatedUser) {
+        console.log("Updated user not found:", req.user.id);
         return res.status(404).send("User not found");
       }
       
       const { password, ...userWithoutPassword } = updatedUser;
+      console.log("User profile updated successfully for user:", req.user.id);
       
       res.status(200).json(userWithoutPassword);
     } catch (error) {
+      console.error("Update user error:", error);
       next(error);
     }
   });

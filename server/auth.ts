@@ -101,8 +101,8 @@ export function setupAuth(app: Express) {
 
       req.login(user, (err) => {
         if (err) return next(err);
-        const userWithoutPassword = { ...user };
-        delete userWithoutPassword.password;
+        // Lag en ny bruker uten passord for å sende til klienten
+        const { password, ...userWithoutPassword } = user;
         res.status(201).json(userWithoutPassword);
       });
     } catch (error) {
@@ -123,8 +123,8 @@ export function setupAuth(app: Express) {
 
         req.login(user, (err) => {
           if (err) return next(err);
-          const userWithoutPassword = { ...user };
-          delete userWithoutPassword.password;
+          // Bruk destrukturering i stedet for delete
+          const { password, ...userWithoutPassword } = user;
           res.status(200).json(userWithoutPassword);
         });
       })(req, res, next);
@@ -142,8 +142,7 @@ export function setupAuth(app: Express) {
 
   app.get("/api/user", (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    const userWithoutPassword = { ...req.user };
-    delete userWithoutPassword.password;
+    const { password, ...userWithoutPassword } = req.user;
     res.json(userWithoutPassword);
   });
 
@@ -188,6 +187,7 @@ export function setupAuth(app: Express) {
       }
 
       const hashedNewPassword = await hashPassword(newPassword);
+      // Vi kan nå bruke direkte oppdatering av passord med endringen i IStorage-grensesnittet
       await storage.updateUser(user.id, { password: hashedNewPassword });
 
       res.status(200).send("Password updated successfully");
@@ -207,8 +207,7 @@ export function setupAuth(app: Express) {
         return res.status(404).send("User not found");
       }
       
-      const userWithoutPassword = { ...updatedUser };
-      delete userWithoutPassword.password;
+      const { password, ...userWithoutPassword } = updatedUser;
       
       res.status(200).json(userWithoutPassword);
     } catch (error) {

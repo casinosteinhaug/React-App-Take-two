@@ -9,7 +9,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  updateUser(id: number, updates: Partial<UpdateUser>): Promise<void>;
+  updateUser(id: number, updates: Partial<UpdateUser> | any): Promise<void>;
   deleteUser(id: number): Promise<void>;
   sessionStore: session.Store;
 }
@@ -46,7 +46,7 @@ export class MemStorage implements IStorage {
         phone: null,
         avatar: null,
         bio: null,
-        socialLinks: [],
+        socialLinks: [] as { platform: string, url: string }[],
         theme: 'system'
       };
       
@@ -72,13 +72,17 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentId++;
+    // Make sure name is properly handled
+    const name = insertUser.name || null;
+    
     const user: User = { 
       ...insertUser, 
       id,
+      name,
       phone: null,
       avatar: null,
       bio: null,
-      socialLinks: [],
+      socialLinks: [] as { platform: string, url: string }[],
       theme: "system",
     };
     this.users.set(id, user);
@@ -91,7 +95,19 @@ export class MemStorage implements IStorage {
       throw new Error(`User with id ${id} not found`);
     }
     
-    const updatedUser = { ...user, ...updates };
+    // Håndtere socialLinks spesielt for å unngå typefeil
+    let socialLinks = user.socialLinks;
+    if (updates.socialLinks) {
+      socialLinks = updates.socialLinks as { platform: string, url: string }[];
+      delete updates.socialLinks;
+    }
+    
+    const updatedUser = { 
+      ...user, 
+      ...updates,
+      socialLinks
+    };
+    
     this.users.set(id, updatedUser);
   }
 

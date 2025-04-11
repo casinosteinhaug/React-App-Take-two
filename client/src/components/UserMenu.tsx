@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import {
   Box,
-  IconButton,
+  Button,
   Popover,
   PopoverTrigger,
   PopoverContent,
@@ -71,55 +71,49 @@ const UserMenu: React.FC = () => {
       >
         <PopoverBody p={0}>
           <VStack spacing={0} align="stretch">
-            <IconButton
+            <Button
               ref={initialFocusRef}
-              aria-label="Profile"
-              icon={<FaUser />}
+              leftIcon={<FaUser />}
               onClick={handleProfileClick}
               variant="ghost"
               justifyContent="flex-start"
               borderRadius={0}
               py={6}
-              iconSpacing={3}
-              leftIcon={<FaUser />}
+              width="100%"
               _hover={{ bg: hoverBg }}
             >
               Profile
-            </IconButton>
+            </Button>
             
-            <IconButton
-              aria-label="Settings"
-              icon={<FaCog />}
+            <Button
+              leftIcon={<FaCog />}
               onClick={handleSettingsClick}
               variant="ghost"
               justifyContent="flex-start"
               borderRadius={0}
               py={6}
-              iconSpacing={3}
-              leftIcon={<FaCog />}
+              width="100%"
               _hover={{ bg: hoverBg }}
             >
               Settings
-            </IconButton>
+            </Button>
             
             <Divider borderColor={borderColor} />
             
-            <IconButton
-              aria-label="Logout"
-              icon={<FaSignOutAlt />}
+            <Button
+              leftIcon={<FaSignOutAlt />}
               onClick={handleLogout}
               variant="ghost"
               justifyContent="flex-start"
               borderRadius={0}
               py={6}
-              iconSpacing={3}
-              leftIcon={<FaSignOutAlt />}
+              width="100%"
               color="red.500"
               _hover={{ bg: hoverBg }}
               isLoading={logoutMutation.isPending}
             >
               Logout
-            </IconButton>
+            </Button>
           </VStack>
         </PopoverBody>
       </PopoverContent>

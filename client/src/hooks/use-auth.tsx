@@ -22,7 +22,7 @@ type AuthContextType = {
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const toast = useToast();
+  const { toast } = useToast();
   
   const {
     data: user,
@@ -43,20 +43,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.setQueryData(["/api/user"], user);
       toast({
         title: "Login successful",
-        status: "success",
+        variant: "default",
         duration: 2000,
-        isClosable: true,
-        position: "bottom",
       });
     },
     onError: (error: Error) => {
       toast({
         title: "Login failed",
         description: error.message,
-        status: "error",
+        variant: "destructive",
         duration: 3000,
-        isClosable: true,
-        position: "bottom",
       });
     },
   });

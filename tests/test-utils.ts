@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { LLMDriverFactory } from '../server/drivers/llm';
 
-export const TEST_PROMPT = 'Hva er to damer med to flotte bein?';
+export const TEST_PROMPT = 'Beskriv dette test-bildet og forklar hva du ser. Gi svaret på norsk.';
 
 export function getTestImageBase64(): string {
   const testImagesDir = path.join(process.cwd(), 'tests', 'test-images');

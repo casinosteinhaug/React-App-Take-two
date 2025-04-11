@@ -1,0 +1,168 @@
+npm run check
+
+> rest-express@1.0.0 check
+> tsc
+
+client/src/App.tsx:19:32 - error TS2322: Type 'FC<{}>' is not assignable to type '() => Element'.
+  Target signature provides too few arguments. Expected 1 or more, but got 0.
+
+19       <ProtectedRoute path="/" component={HomePage} />
+                                  ~~~~~~~~~
+
+  client/src/lib/protected-route.tsx:10:3
+    10   component: () => React.JSX.Element;
+         ~~~~~~~~~
+    The expected type comes from property 'component' which is declared here on type 'IntrinsicAttributes & { path: string; component: () => Element; }'
+
+client/src/App.tsx:20:39 - error TS2322: Type 'FC<{}>' is not assignable to type '() => Element'.
+  Target signature provides too few arguments. Expected 1 or more, but got 0.
+
+20       <ProtectedRoute path="/profile" component={ProfilePage} />
+                                         ~~~~~~~~~
+
+  client/src/lib/protected-route.tsx:10:3
+    10   component: () => React.JSX.Element;
+         ~~~~~~~~~
+    The expected type comes from property 'component' which is declared here on type 'IntrinsicAttributes & { path: string; component: () => Element; }'
+
+client/src/App.tsx:21:40 - error TS2322: Type 'FC<{}>' is not assignable to type '() => Element'.
+  Target signature provides too few arguments. Expected 1 or more, but got 0.
+
+21       <ProtectedRoute path="/settings" component={SettingsPage} />
+                                          ~~~~~~~~~
+
+  client/src/lib/protected-route.tsx:10:3
+    10   component: () => React.JSX.Element;
+         ~~~~~~~~~
+    The expected type comes from property 'component' which is declared here on type 'IntrinsicAttributes & { path: string; component: () => Element; }'
+
+server/drivers/llm/claude-driver.ts:103:9 - error TS2769: No overload matches this call.
+  Overload 1 of 3, '(body: MessageCreateParamsNonStreaming, options?: RequestOptions<unknown> | undefined): APIPromise<Message>', gave the following error.
+    Type '{ role: string; content: any; }[]' is not assignable to type 'MessageParam[]'.
+      Type '{ role: string; content: any; }' is not assignable to type 'MessageParam'.
+        Types of property 'role' are incompatible.
+          Type 'string' is not assignable to type '"user" | "assistant"'.
+  Overload 2 of 3, '(body: MessageCreateParamsStreaming, options?: RequestOptions<unknown> | undefined): APIPromise<Stream<RawMessageStreamEvent>>', gave the following error.
+    Type '{ role: string; content: any; }[]' is not assignable to type 'MessageParam[]'.
+      Type '{ role: string; content: any; }' is not assignable to type 'MessageParam'.
+        Types of property 'role' are incompatible.
+          Type 'string' is not assignable to type '"user" | "assistant"'.
+  Overload 3 of 3, '(body: MessageCreateParamsBase, options?: RequestOptions<unknown> | undefined): APIPromise<Message | Stream<RawMessageStreamEvent>>', gave the following error.
+    Type '{ role: string; content: any; }[]' is not assignable to type 'MessageParam[]'.
+      Type '{ role: string; content: any; }' is not assignable to type 'MessageParam'.
+        Types of property 'role' are incompatible.
+          Type 'string' is not assignable to type '"user" | "assistant"'.
+
+103         messages: messages
+            ~~~~~~~~
+
+  node_modules/@anthropic-ai/sdk/resources/messages/messages.d.ts:655:5
+    655     messages: Array<MessageParam>;
+            ~~~~~~~~
+    The expected type comes from property 'messages' which is declared here on type 'MessageCreateParamsNonStreaming'
+  node_modules/@anthropic-ai/sdk/resources/messages/messages.d.ts:655:5
+    655     messages: Array<MessageParam>;
+            ~~~~~~~~
+    The expected type comes from property 'messages' which is declared here on type 'MessageCreateParamsStreaming'
+  node_modules/@anthropic-ai/sdk/resources/messages/messages.d.ts:655:5
+    655     messages: Array<MessageParam>;
+            ~~~~~~~~
+    The expected type comes from property 'messages' which is declared here on type 'MessageCreateParamsBase'
+
+server/drivers/llm/claude-driver.ts:108:35 - error TS2339: Property 'text' does not exist on type 'ContentBlock'.
+  Property 'text' does not exist on type 'ToolUseBlock'.
+
+108         text: response.content[0].text,
+                                      ~~~~
+
+server/drivers/llm/claude-driver.ts:114:37 - error TS18046: 'error' is of type 'unknown'.
+
+114         error: `Claude API error: ${error.message || 'Unknown error'}`
+                                        ~~~~~
+
+server/drivers/llm/gemini-driver.ts:94:13 - error TS2353: Object literal may only specify known properties, and 'inlineData' does not exist in type '{ text: string; }'.
+
+94             inlineData: {
+               ~~~~~~~~~~
+
+server/drivers/llm/gemini-driver.ts:113:13 - error TS2353: Object literal may only specify known properties, and 'inlineData' does not exist in type '{ text: string; }'.
+
+113             inlineData: {
+                ~~~~~~~~~~
+
+server/drivers/llm/gemini-driver.ts:131:37 - error TS18046: 'error' is of type 'unknown'.
+
+131         error: `Gemini API error: ${error.message || 'Unknown error'}`
+                                        ~~~~~
+
+server/drivers/llm/index.ts:34:59 - error TS18046: 'error' is of type 'unknown'.
+
+34       console.warn('Failed to initialize OpenAI driver:', error.message);
+                                                             ~~~~~
+
+server/drivers/llm/index.ts:41:59 - error TS18046: 'error' is of type 'unknown'.
+
+41       console.warn('Failed to initialize Claude driver:', error.message);
+                                                             ~~~~~
+
+server/drivers/llm/index.ts:48:59 - error TS18046: 'error' is of type 'unknown'.
+
+48       console.warn('Failed to initialize Gemini driver:', error.message);
+                                                             ~~~~~
+
+server/drivers/llm/openai-driver.ts:85:9 - error TS2769: No overload matches this call.
+  Overload 1 of 3, '(body: ChatCompletionCreateParamsNonStreaming, options?: RequestOptions<unknown> | undefined): APIPromise<ChatCompletion>', gave the following error.
+    Type '{ role: string; content: any; }[]' is not assignable to type 'ChatCompletionMessageParam[]'.
+      Type '{ role: string; content: any; }' is not assignable to type 'ChatCompletionMessageParam'.
+        Property 'name' is missing in type '{ role: string; content: any; }' but required in type 'ChatCompletionFunctionMessageParam'.
+  Overload 2 of 3, '(body: ChatCompletionCreateParamsStreaming, options?: RequestOptions<unknown> | undefined): APIPromise<Stream<ChatCompletionChunk>>', gave the following error.
+    Type '{ role: string; content: any; }[]' is not assignable to type 'ChatCompletionMessageParam[]'.
+      Type '{ role: string; content: any; }' is not assignable to type 'ChatCompletionMessageParam'.
+        Property 'name' is missing in type '{ role: string; content: any; }' but required in type 'ChatCompletionFunctionMessageParam'.
+  Overload 3 of 3, '(body: ChatCompletionCreateParamsBase, options?: RequestOptions<unknown> | undefined): APIPromise<ChatCompletion | Stream<...>>', gave the following error.
+    Type '{ role: string; content: any; }[]' is not assignable to type 'ChatCompletionMessageParam[]'.
+      Type '{ role: string; content: any; }' is not assignable to type 'ChatCompletionMessageParam'.
+        Property 'name' is missing in type '{ role: string; content: any; }' but required in type 'ChatCompletionFunctionMessageParam'.
+
+85         messages: messages,
+           ~~~~~~~~
+
+  node_modules/openai/resources/chat/completions/completions.d.ts:570:5
+    570     name: string;
+            ~~~~
+    'name' is declared here.
+  node_modules/openai/resources/chat/completions/completions.d.ts:904:5
+    904     messages: Array<ChatCompletionMessageParam>;
+            ~~~~~~~~
+    The expected type comes from property 'messages' which is declared here on type 'ChatCompletionCreateParamsNonStreaming'
+  node_modules/openai/resources/chat/completions/completions.d.ts:570:5
+    570     name: string;
+            ~~~~
+    'name' is declared here.
+  node_modules/openai/resources/chat/completions/completions.d.ts:904:5
+    904     messages: Array<ChatCompletionMessageParam>;
+            ~~~~~~~~
+    The expected type comes from property 'messages' which is declared here on type 'ChatCompletionCreateParamsStreaming'
+  node_modules/openai/resources/chat/completions/completions.d.ts:570:5
+    570     name: string;
+            ~~~~
+    'name' is declared here.
+  node_modules/openai/resources/chat/completions/completions.d.ts:904:5
+    904     messages: Array<ChatCompletionMessageParam>;
+            ~~~~~~~~
+    The expected type comes from property 'messages' which is declared here on type 'ChatCompletionCreateParamsBase'
+
+server/drivers/llm/openai-driver.ts:97:37 - error TS18046: 'error' is of type 'unknown'.
+
+97         error: `OpenAI API error: ${error.message || 'Unknown error'}`
+                                       ~~~~~
+
+server/vite.ts:39:5 - error TS2322: Type '{ middlewareMode: boolean; hmr: { server: Server<typeof IncomingMessage, typeof ServerResponse>; }; allowedHosts: boolean; }' is not assignable to type 'ServerOptions'.
+  Types of property 'allowedHosts' are incompatible.
+    Type 'boolean' is not assignable to type 'true | string[] | undefined'.
+
+39     server: serverOptions,
+       ~~~~~~
+
+
+Found 15 errors in 6 files.

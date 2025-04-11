@@ -31,7 +31,7 @@ export class LLMDriverFactory {
       this.drivers['openai'] = new OpenAIDriver();
       console.log('Initialized OpenAI driver');
     } catch (error) {
-      console.warn('Failed to initialize OpenAI driver:', error.message);
+      console.warn('Failed to initialize OpenAI driver:', (error as Error).message);
     }
 
     try {

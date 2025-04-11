@@ -100,12 +100,12 @@ export class ClaudeDriver implements LLMDriver {
       const response = await this.client.messages.create({
         model: 'claude-3-7-sonnet-20250219',
         max_tokens: 1000,
-        messages: messages
+        messages: messages as MessageParam[]
       });
       
       // Process and return the response
       return {
-        text: response.content[0].text,
+        text: (response.content[0] as any).text,
       };
     } catch (error) {
       console.error('Claude API error:', error);
